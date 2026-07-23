@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+
+  id Int @id @default(autoincrement())
+
+  firstname  String
+
+  lastname  String
+
+  email String @unique
+
+  password String
+
+  role Role @default(Student)
+
+  student Student?
+
+  lecturer Lecturer?
+
+    enrollment Enrollment?
+
+}
+
+enum Role {
+  School_Admin
+  Lecturer
+  Student
+}
+
+model Department {
+
+  id Int @id @default(autoincrement())
+
+  name String
+
+  code String @unique
+
+  lecturers Lecturer[]
+
+  courses Course[]
+
+  levels Level[]
+
+  student Student[]
+
+  facultyId   Int
+
+  faculty     Faculty  @relation(fields: [facultyId],references: [id])
+
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+}
+
+model Student {
+
+  id Int @id @default(autoincrement())
+
+  userId Int @unique
+
+  studentNumber  String @unique
+
+  departmentId Int?
+
+  levelId Int?
+
+  user User @relation(fields: [userId], references: [id])
+  
+
+  department Department? @relation(fields:[departmentId], references:[id])
+
+  level Level? @relation(fields:[levelId], references:[id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Level {
+
+  id Int @id @default(autoincrement())
+
+  name String
+
+   student Student[]
+
+  lecturer Lecturer[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+
+  departmentId Int
+
+department Department @relation(fields: [departmentId], references: [id])
+
+}
+model Lecturer {
+
+  id Int @id @default(autoincrement())
+
+   title        String
+
+  staffId String @unique
+
+  userId Int @unique
+
+  departmentId Int
+
+   levelId Int
+
+
+  user User @relation(fields: [userId],references: [id])
+
+  level Level @relation(fields: [levelId], references: [id])
+
+
+ department Department @relation(fields: [departmentId], references: [id])
+
+  courses LecturerCourse[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+}
+
+model Course {
+
+  id Int @id @default(autoincrement())
+
+
+  name String
+
+
+  code String @unique
+
+
+  departmentId Int
+
+
+
+ department Department @relation(fields: [departmentId], references: [id])
+
+
+  lecturers LecturerCourse[]
+
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+}
+
+
+model LecturerCourse {
+
+  id Int @id @default(autoincrement())
+
+
+  lecturerId Int
+
+  courseId Int
+
+
+
+lecturer Lecturer @relation(fields: [lecturerId], references: [id])
+
+
+  course Course @relation(fields: [courseId],references: [id])
+
+}
+
+model Enrollment {
+ 
+  id             Int      @id @default(autoincrement())
+
+ userId     Int @unique
+
+ jambScore   Int
+
+ waecAggregate Int
+
+ ninNumber    String
+
+  
+ user User @relation(fields: [userId],references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+}
+
+
+model Faculty {
+  id          Int @id @default(autoincrement())
+  name        String @unique
+
+  departments Department[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
