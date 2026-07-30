@@ -19,7 +19,7 @@ model User {
 
   password String
 
-  role Role @default(Student)
+  role Role @default(Aspirant)
 
   student Student?
 
@@ -33,7 +33,9 @@ enum Role {
   School_Admin
   Lecturer
   Student
+  Aspirant
 }
+
 
 model Department {
 
@@ -53,6 +55,12 @@ model Department {
 
   facultyId   Int
 
+ jambCutOff            Int
+
+minimumWaecAggregate  Float
+
+enrollments Enrollment[]
+
   faculty     Faculty  @relation(fields: [facultyId],references: [id])
 
 
@@ -68,7 +76,7 @@ model Student {
 
   userId Int @unique
 
-  studentNumber  String @unique
+  studentNumber  String? @unique
 
   departmentId Int?
 
@@ -184,15 +192,52 @@ lecturer Lecturer @relation(fields: [lecturerId], references: [id])
 
 model Enrollment {
  
-  id             Int      @id @default(autoincrement())
+  id                    Int      @id @default(autoincrement())
 
- userId     Int @unique
+ firstName              String
 
- jambScore   Int
+  lastName               String
 
- waecAggregate Int
+  otherName              String?
 
- ninNumber    String
+  gender                 Gender
+
+  dateOfBirth            DateTime
+
+  phone                  String
+
+  address                String
+
+  departmentId           Int
+
+  userId                 Int @unique
+
+ jambRegistrationNumber  String   @unique
+
+ jambScore               Int
+
+ waecAggregate           Int
+
+ ninNumber               String
+
+ birthCertificate        String
+
+passportPhoto           String
+
+  country               String
+
+  stateOfOrigin         String
+
+  Lga                   String
+
+  CurrentState           String
+
+  CurrentstateLGA        String
+
+
+status                 EnrollmentStatus @default(PENDING)
+
+   department     Department @relation(fields: [departmentId], references: [id])
 
   
  user User @relation(fields: [userId],references: [id])
@@ -201,6 +246,16 @@ model Enrollment {
 
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum EnrollmentStatus {
+  PENDING
+  ADMITTED
+  REJECTED
+}
 
 model Faculty {
   id          Int @id @default(autoincrement())

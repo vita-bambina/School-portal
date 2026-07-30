@@ -11,6 +11,7 @@ import { StudentModule } from './student/student.module';
 import { LecturerModule } from './lecturer/lecturer.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { FacultyModule } from './faculty/faculty.module';
+import { AspirantModule } from './aspirant/aspirant.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { FacultyModule } from './faculty/faculty.module';
     StudentModule,
     LecturerModule,
     EnrollmentModule,
-    FacultyModule
+    FacultyModule,
+    AspirantModule
   ],
   controllers: [
     AppController

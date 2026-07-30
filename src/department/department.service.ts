@@ -22,6 +22,9 @@ export class DepartmentService {
 
   }
 
+  //  cut off marks
+
+
 
   // get  departments
   findAll() {

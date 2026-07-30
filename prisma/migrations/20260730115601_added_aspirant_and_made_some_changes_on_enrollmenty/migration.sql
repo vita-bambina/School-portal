@@ -1,5 +1,11 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('School_Admin', 'Lecturer', 'Student');
+CREATE TYPE "Role" AS ENUM ('School_Admin', 'Lecturer', 'Student', 'Aspirant');
+
+-- CreateEnum
+CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE');
+
+-- CreateEnum
+CREATE TYPE "EnrollmentStatus" AS ENUM ('PENDING', 'ADMITTED', 'REJECTED');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -8,7 +14,7 @@ CREATE TABLE "User" (
     "lastname" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "Role" NOT NULL DEFAULT 'Student',
+    "role" "Role" NOT NULL DEFAULT 'Aspirant',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -19,6 +25,8 @@ CREATE TABLE "Department" (
     "name" TEXT NOT NULL,
     "code" TEXT NOT NULL,
     "facultyId" INTEGER NOT NULL,
+    "jambCutOff" INTEGER NOT NULL,
+    "minimumWaecAggregate" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -87,10 +95,22 @@ CREATE TABLE "LecturerCourse" (
 -- CreateTable
 CREATE TABLE "Enrollment" (
     "id" SERIAL NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "otherName" TEXT,
+    "gender" "Gender" NOT NULL,
+    "dateOfBirth" TIMESTAMP(3) NOT NULL,
+    "phone" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "departmentId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
+    "jambRegistrationNumber" TEXT NOT NULL,
     "jambScore" INTEGER NOT NULL,
     "waecAggregate" INTEGER NOT NULL,
     "ninNumber" TEXT NOT NULL,
+    "birthCertificate" TEXT NOT NULL,
+    "passportPhoto" TEXT NOT NULL,
+    "status" "EnrollmentStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -132,6 +152,9 @@ CREATE UNIQUE INDEX "Course_code_key" ON "Course"("code");
 CREATE UNIQUE INDEX "Enrollment_userId_key" ON "Enrollment"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Enrollment_jambRegistrationNumber_key" ON "Enrollment"("jambRegistrationNumber");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Faculty_name_key" ON "Faculty"("name");
 
 -- AddForeignKey
@@ -166,6 +189,9 @@ ALTER TABLE "LecturerCourse" ADD CONSTRAINT "LecturerCourse_lecturerId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "LecturerCourse" ADD CONSTRAINT "LecturerCourse_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Enrollment" ADD CONSTRAINT "Enrollment_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Enrollment" ADD CONSTRAINT "Enrollment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

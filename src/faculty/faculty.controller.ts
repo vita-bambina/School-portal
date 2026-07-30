@@ -32,7 +32,6 @@ export class FacultyController {
 
   //
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Get All Faculties' })
   @ApiResponse({ status: 201, description: 'All faculties information gotten' })
   findAll() {
