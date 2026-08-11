@@ -12,7 +12,7 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-    //  Get email and password from DTO
+    
     const { email, password } = loginDto;
     const user = await this.prisma.user.findUnique({
       where: {
@@ -20,7 +20,7 @@ export class AuthService {
       },
     });
 
-    //  If user does not exist, stop login
+  
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -28,7 +28,7 @@ export class AuthService {
     // Compare the password entered with the hashed password in database
     const passwordMatch = await bcrypt.compare(password, user.password);
 
-    // If password is wrong, stop login
+    
     if (!passwordMatch) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -40,10 +40,10 @@ export class AuthService {
       role: user.role,
     };
 
-    // 7. Create JWT token
+    
     const token = this.jwtService.sign(payload);
 
-    // 8. Send response back
+    
     return {
       message: 'Login successful',
       token,
@@ -56,4 +56,10 @@ export class AuthService {
       },
     };
   }
+
+   logout(){
+    return{
+      message: "Logged out Successfully"
+    }
+   }
 }

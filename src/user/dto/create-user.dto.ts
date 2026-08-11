@@ -18,12 +18,13 @@ export class CreateUserDto {
   })
   email!: string;
 
-     @ApiProperty({
-        example: 'olise ',
-        description: "password  "
-    })
+  @ApiProperty({
+    example: 'olise ',
+    description: 'password  ',
+  })
   password!: string;
 
-  
   role!: Role;
+
+
 }

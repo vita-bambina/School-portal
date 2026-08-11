@@ -5,64 +5,68 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Injectable()
 export class CourseService {
-
-  constructor(
-    private prisma: PrismaService
-  ) {}
-
+  constructor(private prisma: PrismaService) {}
 
   // Create a new course
-  create(createCourseDto: CreateCourseDto) {
+  async create(createCourseDto: CreateCourseDto) {
+    const { lecturerIds, ...courseData } = createCourseDto;
 
     return this.prisma.course.create({
-      data: createCourseDto,
+      data: {
+        ...courseData,
+        lecturers: {
+          create: lecturerIds.map((lecturerId) => ({
+            lecturerId,
+          })),
+        },
+      },
     });
-
   }
-
 
   // Get all courses
   findAll() {
-
-    return this.prisma.course.findMany();
-
+    return this.prisma.course.findMany({
+      include: {
+        department: true,
+        level: true,
+        lecturers: {
+          include: {
+            lecturer: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
-
 
   // Get one course
   findOne(id: number) {
-
     return this.prisma.course.findUnique({
       where: {
         id: id,
       },
     });
-
   }
-
 
   // Update a course
   update(id: number, updateCourseDto: UpdateCourseDto) {
-
     return this.prisma.course.update({
       where: {
         id: id,
       },
       data: updateCourseDto,
     });
-
   }
-
 
   // Delete a course
   remove(id: number) {
-
     return this.prisma.course.delete({
       where: {
         id: id,
       },
     });
-
   }
-
 }

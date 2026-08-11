@@ -7,4 +7,10 @@ export class CreateFacultyDto {
     })
     name! : string;
     
+      @ApiProperty({
+        example: 'Fsc ',
+        description: "Faculty shortname "
+    })
+    code!: string;
+
 }

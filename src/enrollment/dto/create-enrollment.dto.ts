@@ -56,6 +56,14 @@ export class CreateEnrollmentDto {
   departmentId!: number;
 
   //
+
+  @ApiProperty({
+    example: 3,
+    description: 'Faculty the aspirant wants to apply for',
+  })
+  facultyId!: number;
+  
+  //
   @ApiProperty({
     example: '12345678901',
     description: 'JAMB registration number',
@@ -124,4 +132,7 @@ export class CreateEnrollmentDto {
     description: 'Applicant current LGA of residence',
   })
   CurrentstateLGA!: string;
+
+  referenceNumber!: string
 }
+

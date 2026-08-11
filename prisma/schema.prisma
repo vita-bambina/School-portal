@@ -3,17 +3,16 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-
   id Int @id @default(autoincrement())
 
-  firstname  String
+  firstname String
 
-  lastname  String
+  lastname String
 
   email String @unique
 
@@ -25,8 +24,7 @@ model User {
 
   lecturer Lecturer?
 
-    enrollment Enrollment?
-
+  enrollment Enrollment?
 }
 
 enum Role {
@@ -36,16 +34,12 @@ enum Role {
   Aspirant
 }
 
-
 model Department {
-
   id Int @id @default(autoincrement())
 
   name String
 
   code String @unique
-
-  lecturers Lecturer[]
 
   courses Course[]
 
@@ -53,41 +47,37 @@ model Department {
 
   student Student[]
 
-  facultyId   Int
+  facultyId Int
 
- jambCutOff            Int
+  jambCutOff Int
 
-minimumWaecAggregate  Float
+  minimumWaecAggregate Float
 
-enrollments Enrollment[]
+  enrollments Enrollment[]
 
-  faculty     Faculty  @relation(fields: [facultyId],references: [id])
-
+  faculty Faculty @relation(fields: [facultyId], references: [id])
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
-
 }
 
 model Student {
-
   id Int @id @default(autoincrement())
 
   userId Int @unique
 
-  studentNumber  String? @unique
+  studentNumber String? @unique
 
   departmentId Int?
 
   levelId Int?
 
   user User @relation(fields: [userId], references: [id])
-  
 
-  department Department? @relation(fields:[departmentId], references:[id])
+  department Department? @relation(fields: [departmentId], references: [id])
 
-  level Level? @relation(fields:[levelId], references:[id])
+  level Level? @relation(fields: [levelId], references: [id])
 
   createdAt DateTime @default(now())
 
@@ -95,155 +85,139 @@ model Student {
 }
 
 model Level {
-
   id Int @id @default(autoincrement())
 
   name String
 
-   student Student[]
+  courses Course[]
 
-  lecturer Lecturer[]
+  student Student[]
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
 
-
   departmentId Int
 
-department Department @relation(fields: [departmentId], references: [id])
-
+  department Department @relation(fields: [departmentId], references: [id])
 }
-model Lecturer {
 
+model Lecturer {
   id Int @id @default(autoincrement())
 
-   title        String
+  title String?
 
   staffId String @unique
 
   userId Int @unique
 
-  departmentId Int
+  facultyId Int?
 
-   levelId Int
+  user User @relation(fields: [userId], references: [id])
 
-
-  user User @relation(fields: [userId],references: [id])
-
-  level Level @relation(fields: [levelId], references: [id])
-
-
- department Department @relation(fields: [departmentId], references: [id])
+  faculty Faculty? @relation(fields: [facultyId], references: [id])
 
   courses LecturerCourse[]
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
-
 }
 
 model Course {
-
   id Int @id @default(autoincrement())
-
 
   name String
 
-
   code String @unique
-
 
   departmentId Int
 
+  levelId Int
 
+  level Level @relation(fields: [levelId], references: [id])
 
- department Department @relation(fields: [departmentId], references: [id])
-
+  department Department @relation(fields: [departmentId], references: [id])
 
   lecturers LecturerCourse[]
-
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
-
 }
 
-
 model LecturerCourse {
-
   id Int @id @default(autoincrement())
-
 
   lecturerId Int
 
   courseId Int
 
+  materials Coursematerial[]
 
+  lecturer Lecturer @relation(fields: [lecturerId], references: [id])
 
-lecturer Lecturer @relation(fields: [lecturerId], references: [id])
-
-
-  course Course @relation(fields: [courseId],references: [id])
-
+  course Course @relation(fields: [courseId], references: [id])
 }
 
 model Enrollment {
- 
-  id                    Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
- firstName              String
+  firstName String?
 
-  lastName               String
+  lastName String?
 
-  otherName              String?
+  otherName String?
 
-  gender                 Gender
+  gender Gender?
 
-  dateOfBirth            DateTime
+  dateOfBirth DateTime?
 
-  phone                  String
+  phone String?
 
-  address                String
+  address String?
 
-  departmentId           Int
+  departmentId Int?
 
-  userId                 Int @unique
+  userId Int @unique
 
- jambRegistrationNumber  String   @unique
+  facultyId Int?
 
- jambScore               Int
+  jambRegistrationNumber String? @unique
 
- waecAggregate           Int
+  jambScore Int?
 
- ninNumber               String
+  waecAggregate Int?
 
- birthCertificate        String
+  referenceNumber String? @unique
 
-passportPhoto           String
+  ninNumber String?
 
-  country               String
+  birthCertificate String?
 
-  stateOfOrigin         String
+  passportPhoto String?
 
-  Lga                   String
+  country String?
 
-  CurrentState           String
+  stateOfOrigin String?
 
-  CurrentstateLGA        String
+  Lga String?
 
+  CurrentState String?
 
-status                 EnrollmentStatus @default(PENDING)
+  CurrentstateLGA String?
 
-   department     Department @relation(fields: [departmentId], references: [id])
+  currentStep Int @default(1)
 
-  
- user User @relation(fields: [userId],references: [id])
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  status EnrollmentStatus @default(PENDING)
 
+  department Department? @relation(fields: [departmentId], references: [id])
+
+  faculty Faculty? @relation(fields: [facultyId], references: [id])
+
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Gender {
@@ -252,18 +226,40 @@ enum Gender {
 }
 
 enum EnrollmentStatus {
+  IN_PROGRESS
   PENDING
   ADMITTED
   REJECTED
 }
 
 model Faculty {
-  id          Int @id @default(autoincrement())
-  name        String @unique
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  code String @unique
 
   departments Department[]
 
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  lecturers Lecturer[]
+
+  enrollments Enrollment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+model Coursematerial {
+  id Int @id @default(autoincrement())
+
+  title String
+
+  file String
+
+  lecturerCourseId Int
+
+  lecturerCourse LecturerCourse @relation(fields: [lecturerCourseId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}

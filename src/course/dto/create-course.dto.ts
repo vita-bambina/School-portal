@@ -24,4 +24,10 @@ export class CreateCourseDto {
   })
 
   levelId!: number;
+
+   @ApiProperty({
+    type: [Number],
+    description: 'IDs of lecturers assigned to this course',
+  })
+  lecturerIds!: number[];
 }

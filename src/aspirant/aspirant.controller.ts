@@ -1,24 +1,32 @@
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { AspirantService } from './aspirant.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guards';
+import { ApiTags, ApiResponse,ApiOperation } from '@nestjs/swagger';
 
 @Controller('aspirant')
 @UseGuards(JwtAuthGuard)
 export class AspirantController {
   constructor(private readonly aspirantService: AspirantService) {}
+
+  @ApiOperation({summary: "Get profile"})
   @Get('profile')
+  @ApiResponse({status: 201, description:"profile gotten successfully"})
   getProfile(@Req() req) {
     return this.aspirantService.getProfile(req.user.id);
   }
   //
   // Get all faculties
+   @ApiOperation({summary: "Get all faculties"})
   @Get('faculties')
+   @ApiResponse({status: 201, description:"faculties gotten successfully"})
   getFaculties() {
     return this.aspirantService.getFaculties();
   }
 
   // Get departments under a faculty
+  @ApiOperation({summary: "Get faculties by id"})
   @Get('faculties/:facultyId/departments')
+   @ApiResponse({status: 201, description:"faculties gotten by Id successfully"})
   getDepartments(@Param('facultyId') facultyId: string) {
     return this.aspirantService.getDepartments(+facultyId);
   }

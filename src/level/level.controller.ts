@@ -39,6 +39,11 @@ export class LevelController {
   findAll() {
     return this.levelService.findAll();
   }
+// 
+@Get('summary')
+getLevelSummary() {
+  return this.levelService.getLevelSummary();
+}
 
   //
   @Get(':id')

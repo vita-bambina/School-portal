@@ -3,6 +3,7 @@ import { PrismaService } from '../Prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -12,12 +13,22 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
         password: hashedPassword,
       },
     });
+    if (createUserDto.role === Role.Lecturer) {
+      await this.prisma.lecturer.create({
+        data: {
+          userId: user.id,
+          staffId: `STF/${String(user.id).padStart(3, '0')}`,
+        },
+      });
+    }
+
+    return user;
   }
 
   findAll() {

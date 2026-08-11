@@ -12,6 +12,9 @@ import { LecturerModule } from './lecturer/lecturer.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { FacultyModule } from './faculty/faculty.module';
 import { AspirantModule } from './aspirant/aspirant.module';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CourseMaterialModule } from './course-material/course-material.module';
 
 @Module({
   imports: [
@@ -24,13 +27,11 @@ import { AspirantModule } from './aspirant/aspirant.module';
     LecturerModule,
     EnrollmentModule,
     FacultyModule,
-    AspirantModule
+    AspirantModule,
+    CloudinaryModule,
+    CourseMaterialModule,
   ],
-  controllers: [
-    AppController
-  ],
-  providers: [
-    AppService
-  ],
+  controllers: [AppController],
+  providers: [AppService, CloudinaryService],
 })
 export class AppModule {}

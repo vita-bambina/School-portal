@@ -1,20 +1,39 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateLecturerDto {
-  @ApiProperty({ example: '1', description: 'lecturers ID on the users table' })
-  userId!: number;
-
-    @ApiProperty({ example: 'Prof/Mrs/Dr/Mr/Miss', description: 'Title they bear' })
+  @ApiProperty({
+    example: 'Dr',
+    description: 'Title of the lecturer',
+  })
   title!: string;
 
-   @ApiProperty({ example: 'CSC345-34', description: 'Number they are given for identity by the deparment they teach/work in' })
-  staffId!: string;
+  @ApiProperty({
+    example: 'John',
+    description: 'Lecturer first name',
+  })
+  firstname!: string;
 
-     @ApiProperty({ example: '1', description: 'The department they teach' })
+  @ApiProperty({
+    example: 'Doe',
+    description: 'Lecturer last name',
+  })
+  lastname!: string;
 
-  departmentId!: number;
+  @ApiProperty({
+    example: 'john.doe@school.com',
+    description: 'Lecturer email',
+  })
+  email!: string;
 
-    @ApiProperty({ example: '1', description: 'The level They teach' })
+  @ApiProperty({
+    example: 'Password123',
+    description: 'Password created by the admin for the lecturer',
+  })
+  password!: string;
 
-  levelId!: number;
+  @ApiProperty({
+    example: 1,
+    description: 'Faculty ID of the lecturer',
+  })
+  facultyId!: number;
 }
