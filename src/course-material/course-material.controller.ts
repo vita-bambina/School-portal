@@ -20,7 +20,7 @@ export class CourseMaterialController {
   }
 
   @Get('id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param(':id') id: string) {
     return this.courseMaterialService.findOne(Number(id));
   }
 
@@ -29,7 +29,7 @@ export class CourseMaterialController {
     return this.courseMaterialService.update(Number(id), changes);
   }
 
-  @Delete('id')
+  @Delete(':id')
   delete(@Param('id') id: string) {
     return this.courseMaterialService.delete(Number(id));
   }

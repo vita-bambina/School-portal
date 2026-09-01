@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -40,13 +41,30 @@ export class LecturerController {
   }
 
   // Get all lecturers
-  @Get()
+  @Get('admin-lecturers')
   @ApiOperation({ summary: 'Get all Lecturers' })
   @ApiResponse({ status: 200, description: 'Gotten All users' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.School_Admin)
-  findAll() {
+  findAll(@Req() req) {
+    console.log('ADMIN REQUEST USER:', req.user);
+
     return this.lecturerService.findAll();
+  }
+
+  @Get('dashboard')
+  @UseGuards(JwtAuthGuard)
+  getDashboard(@Req() req) {
+    console.log('LECTURER REQUEST USER:', req.user);
+    return this.lecturerService.getDashboard(req.user.id);
+  }
+
+  // show all lecturer courses
+  @Get('all-courses')
+  @UseGuards(JwtAuthGuard)
+  getcourses(@Req() req) {
+    console.log('LECTURER REQUEST USER:', req.user);
+    return this.lecturerService.getMyCourses(req.user.id);
   }
 
   // Get one lecturer
@@ -58,6 +76,7 @@ export class LecturerController {
   findOne(@Param('id') id: string) {
     return this.lecturerService.findOne(+id);
   }
+  // get dashboard
 
   // Update lecturer
   @Patch(':id')
@@ -70,6 +89,8 @@ export class LecturerController {
 
     @Body() updateLecturerDto: UpdateLecturerDto,
   ) {
+    console.log('ID:', id);
+    console.log('UPDATE DATA:', updateLecturerDto);
     return this.lecturerService.update(+id, updateLecturerDto);
   }
 
@@ -87,18 +108,18 @@ export class LecturerController {
   }
 
   // Assign lecturer
-  @Patch(':id/assign')
-  @ApiOperation({ summary: 'Assign lecturer to a faculty and level' })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.School_Admin)
-  @ApiResponse({
-    status: 200,
-    description: 'Lecturer assigned successfully',
-  })
-  assign(
-    @Param('id') id: string,
-    @Body() assignLecturerDto: AssignlecturerDto,
-  ) {
-    return this.lecturerService.assign(+id, assignLecturerDto);
-  }
+  // @Patch(':id/assign')
+  // @ApiOperation({ summary: 'Assign lecturer to a faculty and level' })
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.School_Admin)
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Lecturer assigned successfully',
+  // })
+  // assign(
+  //   @Param('id') id: string,
+  //   @Body() assignLecturerDto: AssignlecturerDto,
+  // ) {
+  //   return this.lecturerService.assign(+id, assignLecturerDto);
+  // }
 }

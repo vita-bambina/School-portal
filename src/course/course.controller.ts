@@ -36,6 +36,17 @@ export class CourseController {
     return this.courseService.findAll();
   }
 
+  //  get courses under level controller
+  @Get('level/:levelId')
+  @ApiOperation({ summary: 'Get courses under a level' })
+  @ApiResponse({
+    status: 200,
+    description: 'Got all courses under the selected level with their semester',
+  })
+  findCoursesByLevel(@Param('levelId') levelId: string) {
+    return this.courseService.findCoursesByLevel(+levelId);
+  }
+
   //
   @ApiOperation({ summary: 'Get Course by ID' })
   @ApiResponse({ status: 200, description: 'Course gotten by ID successful' })
@@ -44,19 +55,19 @@ export class CourseController {
     return this.courseService.findOne(+id);
   }
 
-  // 
+  //
 
   @Patch(':id')
-   @ApiOperation({ summary: 'Update a Course' })
+  @ApiOperation({ summary: 'Update a Course' })
   @ApiResponse({ status: 200, description: 'Course Update Successful' })
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
     return this.courseService.update(+id, updateCourseDto);
   }
 
-  // 
+  //
 
   @Delete(':id')
-   @ApiOperation({ summary: 'Delete a Course' })
+  @ApiOperation({ summary: 'Delete a Course' })
   @ApiResponse({ status: 200, description: 'Course Deleted Successful' })
   remove(@Param('id') id: string) {
     return this.courseService.remove(+id);

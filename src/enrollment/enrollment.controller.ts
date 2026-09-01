@@ -18,34 +18,51 @@ import { StudentGuard } from '../auth/guards/student.guard';
 import { Role } from '@prisma/client';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { User } from '../auth/decorator/user.decorator';
+import { response } from 'express';
 
 @ApiTags('enrollment')
 @Controller('enrollment')
 export class EnrollmentController {
   constructor(private readonly enrollmentService: EnrollmentService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Enroll Now' })
-  @ApiResponse({ status: 201, description: 'Enrolled in Successful' })
-  @UseGuards(JwtAuthGuard, StudentGuard)
-  @Roles(Role.Student)
-  create(@Req() req, @Body() EnrollmentDto: CreateEnrollmentDto) {
-    return this.enrollmentService.create(req.user.id, EnrollmentDto);
+  //  it submits the entire form
+  // @Post(':id/submit')
+  // @ApiOperation({ summary: 'Submit enrollment' })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: 'Enrollment submitted successfully',
+  // })
+  // @UseGuards(JwtAuthGuard)
+  // submit(
+  //   @Req() req,
+  //   @Param('id') id: string,
+  //   @Body() EnrollmentDto: CreateEnrollmentDto,
+  // ) {
+  //   return this.enrollmentService.create(
+  //     req.user.id,
+  //     Number(id),
+  //     EnrollmentDto,
+  //   );
+  // }
+
+  // get user current enrollmet step, ec=xample, step one theyve completed
+
+  @Get('/')
+  @UseGuards(JwtAuthGuard)
+  getCurrentEnrollment(@User() user) {
+    return this.enrollmentService.getEnrollment(user.id);
   }
 
-  //    get all users controllers
-  @Get()
+  @Get('admin-applicants')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.School_Admin)
-  @ApiOperation({ summary: 'Get all student that enrolled' })
-  @ApiResponse({ status: 201, description: 'All that enrolled information' })
-  findAll() {
-    return this.enrollmentService.findAll();
+  getAdminApplicants(@Req() req) {
+    console.log('ADMIN USER:', req.user);
+    return this.enrollmentService.getAdminApplicants();
   }
 
-  //   get one specific user controller
-
-  @Get(':id')
+  @Get(':id/revoke')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.School_Admin)
   @ApiOperation({ summary: 'Get a particular Student enrollment information' })
@@ -54,21 +71,20 @@ export class EnrollmentController {
     description: 'A Student that enrolled information',
   })
   findOne(@Param('id') id: string) {
+    console.log('---------One request---------');
+
     return this.enrollmentService.findOne(Number(id));
   }
 
   // update a User
 
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.School_Admin, Role.Student)
+  @Post('')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update a particular user information' })
   @ApiResponse({ status: 200, description: 'Update Successful' })
-  updateOne(
-    @Param('id') id: string,
-    @Body() updateEnrollmentDto: UpdateEnrollmentDto,
-  ) {
-    return this.enrollmentService.updateOne(Number(id), updateEnrollmentDto);
+  updateOne(@Body() updateEnrollmentDto: UpdateEnrollmentDto, @User() user) {
+    console.log(updateEnrollmentDto, '-----the data----');
+    return this.enrollmentService.updateOne(user.id, updateEnrollmentDto);
   }
 
   // Admin approves, student role
@@ -95,14 +111,6 @@ export class EnrollmentController {
     return this.enrollmentService.remove(Number(id));
   }
 
-  // get user current enrollmet step, ec=xample, step one theyve completed
-
-  @Get('current')
-  @UseGuards(JwtAuthGuard)
-  getCurrentEnrollment(@Req() req) {
-    return this.enrollmentService.getCurrentEnrollment(req.user.id);
-  }
-
   //  the start route, like the stop 1, to strt it
   @Post('start')
   @UseGuards(JwtAuthGuard)
@@ -111,4 +119,15 @@ export class EnrollmentController {
   startEnrollment(@Req() req) {
     return this.enrollmentService.createDraft(req.user.id);
   }
+
+  //  get all users controllers
+  // @Get('/all_applicant')
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.School_Admin)
+  // @ApiOperation({ summary: 'Get all student that enrolled' })
+  // @ApiResponse({ status: 201, description: 'All that enrolled information' })
+  // findAll() {
+  //   console.log('🔥 ALL APPLICANTS ROUTE HIT');
+  //   return this.enrollmentService.findAll();
+  // }
 }

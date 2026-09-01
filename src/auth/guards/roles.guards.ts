@@ -1,21 +1,15 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
-
 @Injectable()
 export class RolesGuard implements CanActivate {
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
 
+    const user = request.user;
 
-    canActivate(context: ExecutionContext): boolean {
+    console.log('ROLES GUARD USER:', user);
+    console.log('ROLES GUARD ROLE:', user?.role);
 
-
-        const request = context.switchToHttp().getRequest();
-
-
-        const user = request.user;
-
-
-        return user.role === "School_Admin";
-
-    }
-
+    return user.role === 'School_Admin';
+  }
 }

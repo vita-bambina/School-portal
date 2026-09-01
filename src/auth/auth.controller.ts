@@ -1,8 +1,11 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res, Get, Request} from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt.guards';
+import { RolesGuard } from '../auth/guards/roles.guards';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -45,5 +48,12 @@ export class AuthController {
     });
 
     return this.authService.logout();
+  }
+
+  //  get users login names, to enable which users is logged in
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  getMe(@Request() req) {
+    return this.authService.getMe(req.user.id);
   }
 }

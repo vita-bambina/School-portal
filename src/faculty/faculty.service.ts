@@ -37,6 +37,28 @@ export class FacultyService {
     });
   }
 
+  AdminfindAll() {
+    return this.prisma.faculty.findMany({
+      include: {
+        departments: {
+          include: {
+            _count: {
+              select: {
+                student: true,
+              },
+            },
+          },
+        },
+
+        _count: {
+          select: {
+            departments: true,
+          },
+        },
+      },
+    });
+  }
+
   // get one department
   findOne(id: number) {
     return this.prisma.faculty.findUnique({
@@ -48,7 +70,7 @@ export class FacultyService {
 
   // update faculty
   update(id: number, FacultyDto: UpdateFacultyDto) {
-    return this.prisma.department.update({
+    return this.prisma.faculty.update({
       where: {
         id: id,
       },

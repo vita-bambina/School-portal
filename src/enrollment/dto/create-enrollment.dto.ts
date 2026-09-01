@@ -1,74 +1,84 @@
 // import { Role } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
+
 export class CreateEnrollmentDto {
   @ApiProperty({
     example: 'Blessing',
     description: 'your first name',
   })
-  firstName!: string;
-  //
+  @IsString()
+  firstName: string;
 
   @ApiProperty({
     example: 'Israel',
     description: 'your last name',
   })
-  lastName!: string;
-  //
+  @IsString()
+  lastName: string;
+
   @ApiProperty({
     example: 'marvelous',
     description: 'your last name',
   })
-  otherName!: string;
-  //
+  @IsString()
+  otherName: string;
+
   @ApiProperty({
     example: 'MALE',
     enum: Gender,
   })
-  gender!: Gender;
-  //
+  @IsEnum(Gender)
+  gender: Gender;
 
   @ApiProperty({
     example: '2006-05-20',
     description: 'Date of birth',
   })
-  dateOfBirth!: Date;
+  @IsString()
+  dateOfBirth: string;
 
-  //
   @ApiProperty({
     example: '08012345678',
     description: 'Phone number',
   })
-  phone!: string;
+  @IsString()
+  phone: string;
 
-  //
   @ApiProperty({
     example: 'Lagos Nigeria',
     description: 'Home address',
   })
-  address!: string;
+  @IsString()
+  address: string;
 
-  //
   @ApiProperty({
     example: 3,
     description: 'Department the aspirant wants to apply for',
   })
-  departmentId!: number;
-
-  //
+  @IsNumber()
+  departmentId: number;
 
   @ApiProperty({
     example: 3,
     description: 'Faculty the aspirant wants to apply for',
   })
-  facultyId!: number;
-  
-  //
+  @IsNumber()
+  facultyId: number;
+
   @ApiProperty({
     example: '12345678901',
     description: 'JAMB registration number',
   })
-  jambRegistrationNumber!: string;
+  @IsString()
+  jambRegistrationNumber: string;
 
   //
 
@@ -76,63 +86,82 @@ export class CreateEnrollmentDto {
     example: '328',
     description: 'your jamb score',
   })
-  jambScore!: number;
+  @IsNumber()
+  jambScore: number;
 
   @ApiProperty({
     example: '58.8',
     description: 'Your waec score after calculating all',
   })
-  waecAggregate!: number;
+  @IsNumber()
+  waecAggregate: number;
 
   @ApiProperty({
     example: '40009089234',
     description: 'Your Nin number',
   })
-  ninNumber!: string;
+  @IsString()
+  ninNumber: string;
 
   @ApiProperty({
     example: '/uploads/birth-certificate.png',
     description: 'Birth certificate image',
   })
-  birthCertificate!: string;
+  @IsString()
+  birthCertificate: string;
 
   @ApiProperty({
     example: '/uploads/passport.png',
     description: 'Passport photograph',
   })
-  passportPhoto!: string;
+  @IsString()
+  passportPhoto: string;
 
-  //
   @ApiProperty({
     example: 'Nigeria',
     description: 'Applicant country',
   })
-  country!: string;
+  @IsString()
+  country: string;
 
   @ApiProperty({
     example: 'Lagos',
     description: 'Applicant state of origin',
   })
-  stateOfOrigin!: string;
+  @IsString()
+  stateOfOrigin: string;
 
   @ApiProperty({
     example: 'Ikeja',
     description: 'Applicant LGA of origin',
   })
-  Lga!: string;
+  @IsString()
+  lga: string;
 
   @ApiProperty({
     example: 'Lagos',
     description: 'Applicant current state of residence',
   })
-  CurrentState!: string;
+  @IsString()
+  currentState: string;
 
   @ApiProperty({
     example: 'Ikeja',
     description: 'Applicant current LGA of residence',
   })
-  CurrentstateLGA!: string;
+  @IsString()
+  currentstateLGA: string;
 
-  referenceNumber!: string
+  @ApiProperty({
+    example: 'true || false',
+    description: 'Checks if the form is on the last step',
+  })
+  @IsBoolean()
+  isSubmit: boolean;
+
+  @IsString()
+  jambResult: string;
+
+  @IsString()
+  waecResult: string;
 }
-

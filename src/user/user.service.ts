@@ -11,6 +11,7 @@ export class UserService {
 
   // Create a new user
   async create(createUserDto: CreateUserDto) {
+    console.log('USER DATA:', createUserDto);
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     const user = await this.prisma.user.create({
@@ -24,6 +25,26 @@ export class UserService {
         data: {
           userId: user.id,
           staffId: `STF/${String(user.id).padStart(3, '0')}`,
+        },
+      });
+    }
+    if (user.role === Role.Aspirant) {
+      const enrollment = await this.prisma.enrollment.create({
+        data: {
+          userId: user.id,
+          status: 'IN_PROGRESS',
+          currentStep: 1,
+        },
+      });
+
+      const referenceNumber = `ASP-${String(enrollment.id).padStart(5, '0')}`;
+
+      await this.prisma.enrollment.update({
+        where: {
+          id: enrollment.id,
+        },
+        data: {
+          referenceNumber,
         },
       });
     }

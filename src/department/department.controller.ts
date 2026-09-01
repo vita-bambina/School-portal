@@ -5,7 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete, 
+  Delete,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
@@ -38,6 +38,17 @@ export class DepartmentController {
   @ApiResponse({ status: 200, description: 'Got all department Sucessfully' })
   findAll() {
     return this.departmentService.findAll();
+  }
+  //
+  @Get('faculty/:facultyId')
+  @ApiOperation({ summary: 'Get departments under a faculty' })
+  @ApiResponse({
+    status: 200,
+    description: 'Got all departments under the selected faculty',
+  })
+  findDepartmentsByFaculty(@Param('facultyId') facultyId: string) {
+     console.log("FACULTY ID RECEIVED:", facultyId);
+    return this.departmentService.findAlldepartments(+facultyId);
   }
 
   //

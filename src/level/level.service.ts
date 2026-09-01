@@ -7,6 +7,12 @@ import { Prisma } from '@prisma/client';
 export interface LevelSummary {
   id: number;
   level: string;
+  departmentId: number;
+  department: {
+    id: number;
+    name: string;
+    facultyId: number;
+  };
   totalStudents: number;
   totalCourses: number;
 }
@@ -62,6 +68,7 @@ export class LevelService {
       include: {
         student: true,
         courses: true,
+        department: true,
       },
     });
 
@@ -76,6 +83,12 @@ export class LevelService {
         acc.push({
           id: level.id,
           level: level.name,
+          departmentId: level.departmentId,
+          department: {
+            id: level.department.id,
+            name: level.department.name,
+            facultyId: level.department.facultyId,
+          },
           totalStudents: level.student.length,
           totalCourses: level.courses.length,
         });
@@ -85,5 +98,16 @@ export class LevelService {
     }, []);
 
     return summary;
+  }
+
+  async findLevelsByDepartment(departmentId: number) {
+    return this.prisma.level.findMany({
+      where: {
+        departmentId: departmentId,
+      },
+      include: {
+        department: true,
+      },
+    });
   }
 }

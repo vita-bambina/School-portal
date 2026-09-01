@@ -31,15 +31,22 @@ export class FacultyController {
   }
 
   //
-  @UseGuards(JwtAuthGuard, RolesGuard)
+
   @Get()
   @ApiOperation({ summary: 'Get All Faculties' })
   @ApiResponse({ status: 201, description: 'All faculties information gotten' })
   findAll() {
-    console.log('Herrrrrr ...');
     return this.facultyService.findAll();
   }
 
+  @Get('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.School_Admin)
+  @ApiOperation({ summary: 'Get All Faculties' })
+  @ApiResponse({ status: 201, description: 'All faculties information gotten' })
+  AdminfindAll() {
+    return this.facultyService.findAll();
+  }
   //
 
   @ApiOperation({ summary: 'Get Faculty by Id' })

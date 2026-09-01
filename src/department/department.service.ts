@@ -67,4 +67,45 @@ export class DepartmentService {
       },
     });
   }
+
+  //  get departments counts for student, lecturer, and shi and shi
+
+  async findAlldepartments(facultyId: number) {
+    const departments = await this.prisma.department.findMany({
+      where: {
+        facultyId: facultyId,
+      },
+      include: {
+        faculty: true,
+        levels: true,
+        courses: true,
+        student: true,
+      },
+    });
+
+    const getdepartmentswithcounts = await Promise.all(
+      departments.map(async (department) => {
+        const lecturerCount = await this.prisma.lecturerCourse.count({
+          where: {
+            course: {
+              departmentId: department.id,
+            },
+          },
+        });
+
+        return {
+          ...department,
+
+          levelCount: department.levels.length,
+
+          studentCount: department.student.length,
+
+          courseCount: department.courses.length,
+
+          lecturerCount,
+        };
+      }),
+    );
+    return getdepartmentswithcounts;
+  }
 }

@@ -11,7 +11,7 @@ import { Role, EnrollmentStatus } from '@prisma/client';
 export class EnrollmentService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: number, EnrollmentDto: CreateEnrollmentDto) {
+  async create(userId: number, Id: number, EnrollmentDto: CreateEnrollmentDto) {
     const department = await this.prisma.department.findUnique({
       where: {
         id: EnrollmentDto.departmentId,
@@ -28,36 +28,31 @@ export class EnrollmentService {
 
     const status = qualified ? 'PENDING' : 'REJECTED';
 
-    // approve
+    const referenceNumber = `ASP_${String(Id).padStart(3, '0')}`;
 
-    const lastEnrollment = await this.prisma.enrollment.findFirst({
-      orderBy: {
-        id: 'desc',
-      },
-    });
-
-    const nextNumber = lastEnrollment ? lastEnrollment.id + 1 : 1;
-
-    const referenceNumber = `ASP_${String(nextNumber).padStart(3, '0')}`;
-
-    return this.prisma.enrollment.create({
-      data: {
+    return this.prisma.enrollment.update({
+      where: {
+        id: Id,
         userId,
+      },
+      data: {
         ...EnrollmentDto,
         referenceNumber,
         status,
+        currentStep: 4,
       },
     });
   }
 
   //   get all users that enrolled
-  async findAll() {
-    return this.prisma.enrollment.findMany();
-  }
+  // async findAll() {
+  //   return this.prisma.enrollment.findMany();
+  // }
 
   // get one user
 
   async findOne(id: number) {
+    console.log('---------UserId_--------------:', id);
     return this.prisma.enrollment.findUnique({
       where: {
         id: id,
@@ -66,13 +61,46 @@ export class EnrollmentService {
   }
 
   //  update a user
-  async updateOne(id: number, updateenrollment: UpdateEnrollmentDto) {
-    return this.prisma.enrollment.update({
+  async updateOne(userId: number, updateenrollmentData: UpdateEnrollmentDto) {
+    // Check if the enrollment exists
+    const { isSubmit, ...payload } = updateenrollmentData;
+
+    const updateenrollment = {
+      ...payload,
+      status: isSubmit
+        ? EnrollmentStatus.PENDING
+        : EnrollmentStatus.IN_PROGRESS,
+    };
+    const enrollment = await this.prisma.enrollment.findUnique({
       where: {
-        id,
+        userId,
       },
-      data: updateenrollment,
     });
+
+    // If it doesn't exist → CREATE
+    if (!enrollment) {
+      return this.prisma.enrollment.create({
+        data: {
+          ...updateenrollment,
+          userId,
+        },
+      });
+    }
+    // If it exists → PATCH
+    const data = Object.fromEntries(
+      Object.entries(updateenrollment).filter(
+        ([_, value]) => value !== undefined && value !== null,
+      ),
+    );
+
+    const updatedForm = this.prisma.enrollment.update({
+      where: {
+        userId,
+      },
+      data,
+    });
+
+    return updatedForm;
   }
 
   //  delete enrollment
@@ -91,6 +119,11 @@ export class EnrollmentService {
       where: {
         id,
       },
+      include: {
+        faculty: true,
+        session: true,
+        department: true,
+      },
     });
 
     if (!enrollment) {
@@ -98,6 +131,13 @@ export class EnrollmentService {
     }
     if (!enrollment.departmentId) {
       throw new Error('Department is required before approval');
+    }
+
+    if (!enrollment.facultyId) {
+      throw new Error('Faculty required before approval');
+    }
+    if (!enrollment.session) {
+      throw new Error('Session required before approval');
     }
     const level = await this.prisma.level.findFirst({
       where: {
@@ -110,14 +150,39 @@ export class EnrollmentService {
       throw new Error('100 Level not found');
     }
 
-    await this.prisma.student.create({
+    const sessionYear = enrollment.session.year;
+
+    const firstYear = sessionYear.substring(2, 4);
+
+    const student = await this.prisma.student.create({
       data: {
         userId: enrollment.userId,
         departmentId: enrollment.departmentId,
         levelId: level.id,
       },
     });
+    const studentIdNumber = String(student.id).padStart(4, '0');
 
+    const departmentIdNumber = String(enrollment.departmentId).padStart(2, '0');
+
+    const studentNumber =
+      `${enrollment.faculty!.code}/` +
+      `${enrollment.department!.code}/` +
+      `${firstYear}` +
+      `${studentIdNumber}` +
+      `${departmentIdNumber}`;
+
+    console.log('--------matric number------:', studentNumber);
+    console.log('-------enrollment user id-----------:', enrollment.userId);
+
+    await this.prisma.student.update({
+      where: {
+        id: student.id,
+      },
+      data: {
+        studentNumber: studentNumber,
+      },
+    });
     await this.prisma.user.update({
       where: {
         id: enrollment.userId,
@@ -136,24 +201,37 @@ export class EnrollmentService {
       },
     });
   }
+
   // get current update like enrollment step
-  async getCurrentEnrollment(userId: number) {
+  async getEnrollment(userId: number) {
     return this.prisma.enrollment.findFirst({
       where: {
-        userId: userId,
-        status: EnrollmentStatus.IN_PROGRESS,
+        userId,
       },
     });
   }
 
-  // draft for the currentstep
   async createDraft(userId: number) {
-  return this.prisma.enrollment.create({
-    data: {
-      userId,
-      currentStep: 1,
-      status: EnrollmentStatus.IN_PROGRESS,
-    },
-  });
-}
+    console.log('GETTING ENROLLMENT FOR USER:', userId);
+
+    return this.prisma.enrollment.findUnique({
+      where: {
+        userId,
+      },
+    });
+  }
+
+  async getAdminApplicants() {
+    return this.prisma.enrollment.findMany({
+      select: {
+        id: true,
+        referenceNumber: true,
+        firstName: true,
+        lastName: true,
+        otherName: true,
+        status: true,
+        currentStep: true,
+      },
+    });
+  }
 }

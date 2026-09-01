@@ -18,6 +18,18 @@ export class CourseMaterialService {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        lecturerCourse: {
+          include: {
+            course: {
+              include: {
+                department: true,
+                level: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 

@@ -73,6 +73,10 @@ model Student {
 
   levelId Int?
 
+  semesterId Int?
+
+  semester Semesters? @relation(fields: [semesterId], references: [id])
+
   user User @relation(fields: [userId], references: [id])
 
   department Department? @relation(fields: [departmentId], references: [id])
@@ -135,6 +139,12 @@ model Course {
 
   levelId Int
 
+  courseunit  Int?
+
+  semesterId Int?
+
+  semester Semesters? @relation(fields: [semesterId], references: [id])
+
   level Level @relation(fields: [levelId], references: [id])
 
   department Department @relation(fields: [departmentId], references: [id])
@@ -171,7 +181,7 @@ model Enrollment {
 
   gender Gender?
 
-  dateOfBirth DateTime?
+  dateOfBirth String?
 
   phone String?
 
@@ -201,15 +211,23 @@ model Enrollment {
 
   stateOfOrigin String?
 
-  Lga String?
+  lga String?
 
-  CurrentState String?
+   waecResult String?
 
-  CurrentstateLGA String?
+   jambResult String?
+
+  currentState String?
+
+  currentstateLGA String?
 
   currentStep Int @default(1)
 
-  status EnrollmentStatus @default(PENDING)
+  status EnrollmentStatus @default( IN_PROGRESS)
+
+  sessionId Int?
+
+session Academicsession? @relation( fields: [sessionId],references: [id])
 
   department Department? @relation(fields: [departmentId], references: [id])
 
@@ -221,8 +239,8 @@ model Enrollment {
 }
 
 enum Gender {
-  MALE
-  FEMALE
+  Male
+  Female
 }
 
 enum EnrollmentStatus {
@@ -262,4 +280,50 @@ model Coursematerial {
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
+}
+
+model Academicsession {
+  id Int @id @default(autoincrement())
+
+  year String
+
+  startdate String
+
+  enddate String
+
+  semesters Semesters[]
+
+  enrollments Enrollment[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Semesters {
+  id Int @id @default(autoincrement())
+
+  semester Semester
+
+  startDate String
+
+  endDate String
+
+  sessionId Int
+
+  session Academicsession @relation(fields: [sessionId], references: [id])
+
+  courses Course[]
+
+  students Student[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+enum Semester {
+  first_semester
+
+  second_semester
 }

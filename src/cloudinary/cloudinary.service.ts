@@ -18,7 +18,7 @@ export class CloudinaryService {
             reject(error);
           }
 
-          resolve(result);
+          return resolve(result);
         })
         .end(file.buffer);
     });

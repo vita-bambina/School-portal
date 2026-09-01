@@ -15,6 +15,8 @@ import { AspirantModule } from './aspirant/aspirant.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CourseMaterialModule } from './course-material/course-material.module';
+import { AcademicSessionModule } from './academic-session/academic-session.module';
+import { SemestersModule } from './semesters/semesters.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { CourseMaterialModule } from './course-material/course-material.module';
     AspirantModule,
     CloudinaryModule,
     CourseMaterialModule,
+    AcademicSessionModule,
+    SemestersModule,
   ],
   controllers: [AppController],
   providers: [AppService, CloudinaryService],

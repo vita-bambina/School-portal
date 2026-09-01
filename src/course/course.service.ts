@@ -52,12 +52,63 @@ export class CourseService {
   }
 
   // Update a course
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return this.prisma.course.update({
-      where: {
-        id: id,
-      },
-      data: updateCourseDto,
+  // Update a course
+  // Update a course
+  async update(id: number, updateCourseDto: UpdateCourseDto) {
+    const { lecturerIds, ...courseData } = updateCourseDto;
+
+    return this.prisma.$transaction(async (tx) => {
+      // Update the course
+      const course = await tx.course.update({
+        where: {
+          id: id,
+        },
+        data: courseData,
+      });
+
+      // Find the lecturer-course records for this course
+      const lecturerCourses = await tx.lecturerCourse.findMany({
+        where: {
+          courseId: id,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const lecturerCourseIds = lecturerCourses.map(
+        (lecturerCourse) => lecturerCourse.id,
+      );
+
+      // Delete course materials belonging to those lecturer-course records
+      if (lecturerCourseIds.length > 0) {
+        await tx.coursematerial.deleteMany({
+          where: {
+            lecturerCourseId: {
+              in: lecturerCourseIds,
+            },
+          },
+        });
+      }
+
+      // Delete the old lecturer assignments
+      await tx.lecturerCourse.deleteMany({
+        where: {
+          courseId: id,
+        },
+      });
+
+      // Add the new lecturers
+      if (lecturerIds && lecturerIds.length > 0) {
+        await tx.lecturerCourse.createMany({
+          data: lecturerIds.map((lecturerId) => ({
+            lecturerId: lecturerId,
+            courseId: id,
+          })),
+        });
+      }
+
+      return course;
     });
   }
 
@@ -66,6 +117,18 @@ export class CourseService {
     return this.prisma.course.delete({
       where: {
         id: id,
+      },
+    });
+  }
+
+  //  get courses under the level
+  async findCoursesByLevel(levelId: number) {
+    return this.prisma.course.findMany({
+      where: {
+        levelId: levelId,
+      },
+      include: {
+        semester: true,
       },
     });
   }

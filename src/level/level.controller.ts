@@ -39,11 +39,19 @@ export class LevelController {
   findAll() {
     return this.levelService.findAll();
   }
-// 
-@Get('summary')
-getLevelSummary() {
-  return this.levelService.getLevelSummary();
-}
+  //
+  @Get('summary')
+  getLevelSummary() {
+    return this.levelService.getLevelSummary();
+  }
+
+  //
+  @Get('department/:departmentId')
+  findLevelsByDepartment(@Param('departmentId') departmentId: string) {
+    return this.levelService.findLevelsByDepartment(+departmentId);
+  }
+
+  // 
 
   //
   @Get(':id')
@@ -53,9 +61,9 @@ getLevelSummary() {
     return this.levelService.findOne(+id);
   }
 
-  // 
+  //
   @Patch(':id')
-   @ApiOperation({ summary: 'Update a level' })
+  @ApiOperation({ summary: 'Update a level' })
   @ApiResponse({ status: 200, description: 'Update Successful' })
   update(@Param('id') id: string, @Body() updateLevelDto: UpdateLevelDto) {
     return this.levelService.update(+id, updateLevelDto);
@@ -63,7 +71,7 @@ getLevelSummary() {
 
   // Delete a level
   @Delete(':id')
-   @ApiOperation({ summary: 'Delete level' })
+  @ApiOperation({ summary: 'Delete level' })
   @ApiResponse({ status: 200, description: 'level deleted Successfully' })
   remove(@Param('id') id: string) {
     return this.levelService.remove(+id);
