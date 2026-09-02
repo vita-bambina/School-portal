@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, Get, Request} from '@nestjs/common';
+import { Body, Controller, Post, Res, Get, Request } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -25,8 +25,9 @@ export class AuthController {
     // Store JWT inside cookie
     res.cookie('token', result.token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'none',
+
       maxAge: 24 * 60 * 60 * 1000,
     });
 
