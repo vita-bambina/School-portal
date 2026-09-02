@@ -17,6 +17,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CourseMaterialModule } from './course-material/course-material.module';
 import { AcademicSessionModule } from './academic-session/academic-session.module';
 import { SemestersModule } from './semesters/semesters.module';
+import { PortalModule } from './portal/portal.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SemestersModule } from './semesters/semesters.module';
     CourseMaterialModule,
     AcademicSessionModule,
     SemestersModule,
+    PortalModule,
   ],
   controllers: [AppController],
   providers: [AppService, CloudinaryService],

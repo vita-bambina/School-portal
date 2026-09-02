@@ -28,7 +28,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: ' http://localhost:5173',
+    origin: 'https://school-portal-frontend-tau.vercel.app/',
     credentials: true,
   });
 
