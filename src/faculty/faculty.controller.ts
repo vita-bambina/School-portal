@@ -32,6 +32,11 @@ export class FacultyController {
 
   //
 
+  @Get('count')
+  countFaculties() {
+    return this.facultyService.countFaculties();
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get All Faculties' })
   @ApiResponse({ status: 201, description: 'All faculties information gotten' })

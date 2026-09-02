@@ -86,4 +86,8 @@ export class FacultyService {
       },
     });
   }
+
+  async countFaculties() {
+  return this.prisma.faculty.count();
+}
 }
